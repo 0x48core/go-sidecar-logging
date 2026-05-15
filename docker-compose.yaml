@@ -1,0 +1,69 @@
+services:
+  elasticsearch:
+    image: elasticsearch:8.13.0
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    ports:
+      - "9200:9200"
+    networks:
+      - sidecar-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9200/_cluster/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  transactions-api:
+    build:
+      context: ./transactions-api
+      dockerfile: Dockerfile
+    container_name: transactions-api
+    environment:
+      - PORT=8080
+      - LOG_DIR=/app/logs
+      - LOG_FILE=xapi.log
+      - QUEUE_SIZE=100
+      - FLUSH_INTERVAL=5s
+    volumes:
+      - logs:/app/logs
+    ports:
+      - "8080:8080"
+    networks:
+      - sidecar-net
+    restart: on-failure
+
+  sidecar-api:
+    build:
+      context: ./sidecar-api
+      dockerfile: Dockerfile
+    container_name: sidecar-api
+    environment:
+      - PORT=8081
+      - LOG_DIR=/app/logs
+      - LOG_FILE=xapi.log
+      - MAX_BATCH_SIZE=5
+      - WATCH_INTERVAL=5s
+      - ES_URL=http://elasticsearch:9200
+      - ES_INDEX=application-logs
+    volumes:
+      - logs:/app/logs
+    ports:
+      - "8081:8081"
+    networks:
+      - sidecar-net
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    restart: on-failure
+
+volumes:
+  logs:
+    driver: local
+
+networks:
+  sidecar-net:
+    driver: bridge
