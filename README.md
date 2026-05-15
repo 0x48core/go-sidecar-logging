@@ -266,7 +266,6 @@ docker compose down -v   # -v also removes the shared logs volume
 
 ## References
 
-- [The Sidecar Pattern — InfoQ](https://www.infoq.com/articles/asp-net-core-side-car/)
 - [go-elasticsearch](https://github.com/elastic/go-elasticsearch)
 - [Gin Web Framework](https://github.com/gin-gonic/gin)
 - [Uber Zap Logger](https://github.com/uber-go/zap)
