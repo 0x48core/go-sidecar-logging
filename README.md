@@ -1,7 +1,6 @@
-file_path: /Users/aunguyen/augustus/go-sidecar-logging/README.md
-content: # go-sidecar-logging
+# go-sidecar-logging
 
-A Go implementation of the **Sidecar Pattern** for distributed logging, inspired by the [ASP.NET Core Sidecar article on InfoQ](https://www.infoq.com/articles/asp-net-core-side-car/).
+A Go implementation of the **Sidecar Pattern** for distributed logging.
 
 The `transactions-api` writes structured logs to a shared volume. The `sidecar-api` runs alongside it, watches the shared log file, and ships batched entries to Elasticsearch — without the primary service knowing anything about Elasticsearch.
 
